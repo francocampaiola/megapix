@@ -1,7 +1,10 @@
-import { Sidebar } from "@/components";
+import { Navbar, Sidebar } from "@/components";
 
 export default function Actividad() {
   return (
-    <Sidebar />
+    <>
+      <Navbar />
+      <Sidebar />
+    </>
   )
 }

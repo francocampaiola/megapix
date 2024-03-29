@@ -1,7 +1,10 @@
-import { Sidebar } from "@/components";
+import { Navbar, Sidebar } from "@/components";
 
 export default function Reportes() {
   return (
-    <Sidebar />
+    <>
+      <Navbar />
+      <Sidebar />
+    </>
   )
 }
