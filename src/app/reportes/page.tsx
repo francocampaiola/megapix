@@ -1,6 +1,6 @@
 import { Sidebar } from "@/components";
 
-export default function Backoffice() {
+export default function Reportes() {
   return (
     <Sidebar />
   )
