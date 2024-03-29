@@ -1,6 +1,3 @@
-'use client'
-
-import { useState } from "react";
 import { AiOutlineHome, AiOutlineInteraction, AiOutlinePieChart, AiOutlineLeft } from "react-icons/ai";
 import { SidebarMenuItem } from "./SidebarMenuItem";
 import Image from "next/image";
@@ -29,7 +26,7 @@ export const Sidebar = () => {
         <div
             id="menu"
             style={{ width: '300px' }}
-            className="min-h-screen z-10 text-slate-300 w-64 left-0 overflow-hidden bg-neutral-900"
+            className="absolute min-h-screen z-10 text-slate-300 w-64 left-0 overflow-hidden bg-neutral-800"
         >
             <div id="logo" className="mt-6 ml-6 flex justify-center">
                 <Image src={'/megapix_logo.png'} width={130} height={100} alt="Logo" />
