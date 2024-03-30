@@ -1,46 +1,48 @@
 'use client'
 
-import Image from "next/image";
 import { useState } from "react";
 import { CiMenuKebab } from "react-icons/ci";
 import { FaChevronRight } from "react-icons/fa";
 import { HiOutlineIdentification } from "react-icons/hi";
 import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-icons/md";
-
-const Modal = ({ closeModal }: any) => {
-    return (
-        <div className="bg-slate-900 bg-opacity-50 backdrop-blur-sm flex justify-center items-center absolute top-16 right-0 bottom-0 left-0 w-full">
-            <div className="bg-neutral-900 rounded-md text-center h-96 w-96">
-                <div className="flex justify-between w-full items-center">
-                    <h3 className="text-white p-3 text-md">Documento frente y dorso</h3>
-                    <p className="text-white p-3 cursor-pointer" onClick={closeModal}>x</p>
-                </div>
-                <hr className="border-gray-600 mb-3" />
-                <p className="text-white pl-3 text-xs text-left">Fotografía DNI frontal</p>
-                <Image src={'/ui/registro/DNI_frontal.png'} width={100} height={100} style={{ width: '50%' }} className="mx-auto mt-3" alt="DNI frontal" />
-                <p className="text-white pl-3 text-xs text-left mt-3 mb-3">Fotografía DNI dorsal</p>
-                <Image src={'/ui/registro/DNI_dorsal.png'} width={100} height={100} style={{ width: '50%' }} className="mx-auto mt-3" alt="DNI dorsal" />
-            </div>
-        </div>
-    )
-}
+import { ClientToast, DocumentModal, RejectedClientModal } from "./utils";
 
 export const Table = () => {
-    const [showModal, setShowModal] = useState(false);
+    const [showDocumentModal, setShowDocumentModal] = useState(false);
+    const [showClientRejectedModal, setShowClientRejectedModal] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showToast, setShowToast] = useState({ show: false, type: '' });
 
-    const closeModal = () => {
-        setShowModal(false);
+    const closeDocumentModal = () => {
+        setShowDocumentModal(false);
     };
 
+    const closeClientRejectedModal = () => {
+        setShowClientRejectedModal(false);
+    }
+
+    const closeToast = () => {
+        setShowToast({ show: false, type: '' })
+    }
+
     const toggleViewDocument = () => {
-        setShowModal(true);
+        setShowDocumentModal(true);
+        setShowDropdown(false);
+    }
+
+    const toggleClientRejected = () => {
+        setShowClientRejectedModal(true);
         setShowDropdown(false);
     }
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     };
+
+    const toggleShowToast = (type: string) => {
+        setShowDropdown(false);
+        setShowToast({ show: true, type: type });
+    }
 
     return (
         <div className="flex flex-col">
@@ -99,7 +101,7 @@ export const Table = () => {
                                     </td>
                                     <td className="text-sm font-light px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
-                                            <HiOutlineIdentification onClick={() => setShowModal(true)} size={20} className="cursor-pointer mr-2 text-teal-500" />
+                                            <HiOutlineIdentification onClick={() => setShowDocumentModal(true)} size={20} className="cursor-pointer mr-2 text-teal-500" />
                                             40.644.122
                                         </div>
                                     </td>
@@ -112,15 +114,15 @@ export const Table = () => {
                                         </button>
                                     </td>
                                     {showDropdown && (
-                                        <div className="absolute right-40 mt-4 mr-3 w-56 rounded-md bg-neutral-600 shadow-lg z-10">
+                                        <td className="absolute right-40 mt-4 mr-3 w-56 rounded-md bg-neutral-600 shadow-lg z-10">
                                             <div className="py-1">
                                                 <a onClick={toggleViewDocument} className="block px-4 py-2 text-sm text-white cursor-pointer">Ver documento</a>
                                                 <hr className="mr-4 ml-4 border-grey-300" />
-                                                <a href="#" className="block px-4 py-2 text-sm text-white ">Aprobar cliente</a>
+                                                <a onClick={() => toggleShowToast('success')} className="block px-4 py-2 text-sm text-white ">Aprobar cliente</a>
                                                 <hr className="mr-4 ml-4 border-grey-300" />
-                                                <a href="#" className="block px-4 py-2 text-sm text-white ">Denegar cliente</a>
+                                                <a onClick={toggleClientRejected} className="block px-4 py-2 text-sm text-white ">Denegar cliente</a>
                                             </div>
-                                        </div>
+                                        </td>
                                     )}
                                 </tr>
                             </tbody>
@@ -150,10 +152,21 @@ export const Table = () => {
                 </div>
             </div>
             {
-                showModal ? (
-                    <Modal closeModal={closeModal} />
+                showDocumentModal ? (
+                    <DocumentModal closeModal={closeDocumentModal} />
                 ) : null
             }
+            {
+                showToast.show && (
+                    <ClientToast type={showToast.type} closeToast={closeToast} />
+                )
+            }
+            {
+                showClientRejectedModal ? (
+                    <RejectedClientModal closeModal={closeClientRejectedModal} />
+                ) : null
+            }
+
         </div>
     )
 }
