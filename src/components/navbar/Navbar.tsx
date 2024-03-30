@@ -14,7 +14,7 @@ export const Navbar = () => {
                 </button>
                 <p className='text-gray-600'>|</p>
                 <Image src={'/avatar.jpeg'} alt='Avatar' width={100} height={100} style={{
-                    width: '2%'
+                    width: '1.5%'
                 }} className='rounded-full overflow-hidden border-2 border-green-300' />
                 <p className='text-gray-600'>|</p>
                 <button className="flex items-center bg-neutral-800 hover:bg-neutral-600 transition-all ease-in-out text-white font-medium text-xs py-2 px-3 rounded gap-2">
