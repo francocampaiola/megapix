@@ -33,6 +33,11 @@ export const Table = () => {
         setShowModal(false);
     };
 
+    const toggleViewDocument = () => {
+        setShowModal(true);
+        setShowDropdown(false);
+    }
+
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     };
@@ -109,7 +114,7 @@ export const Table = () => {
                                     {showDropdown && (
                                         <div className="absolute right-40 mt-4 mr-3 w-56 rounded-md bg-neutral-600 shadow-lg z-10">
                                             <div className="py-1">
-                                                <a onClick={() => setShowModal(true)} className="block px-4 py-2 text-sm text-white cursor-pointer">Ver documento</a>
+                                                <a onClick={toggleViewDocument} className="block px-4 py-2 text-sm text-white cursor-pointer">Ver documento</a>
                                                 <hr className="mr-4 ml-4 border-grey-300" />
                                                 <a href="#" className="block px-4 py-2 text-sm text-white ">Aprobar cliente</a>
                                                 <hr className="mr-4 ml-4 border-grey-300" />
