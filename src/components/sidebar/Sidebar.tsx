@@ -29,7 +29,10 @@ export const Sidebar = () => {
             className="absolute min-h-screen z-10 text-slate-300 w-64 left-0 overflow-hidden bg-neutral-800"
         >
             <div id="logo" className="mt-6 ml-6 flex justify-center">
-                <Image src={'/megapix_logo.png'} width={130} height={100} alt="Logo" />
+                <Image src={'/megapix_logo.png'} priority width={100} height={100} alt="Logo" style={{
+                    width: 'auto',
+                    height: 'auto'
+                }} />
             </div>
             <div className="mt-6 px-5 py-5">
                 <span className="text-sm md:text-base font-bold">

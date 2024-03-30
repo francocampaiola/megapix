@@ -198,7 +198,7 @@ export const Table = () => {
             {
                 showDocumentModal ? (
                     <DocumentModal closeModal={closeDocumentModal} />
-                ) : null
+                ) : <></>
             }
             {
                 showToast.show && (
@@ -208,7 +208,7 @@ export const Table = () => {
             {
                 showClientRejectedModal ? (
                     <RejectedClientModal closeModal={closeClientRejectedModal} />
-                ) : null
+                ) : <></>
             }
         </div>
     )
