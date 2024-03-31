@@ -5,7 +5,9 @@ export interface ToastProps {
     closeToast: MouseEventHandler;
 }
 
-export interface ModalProps {
+export interface DocumentModalProps {
+    dniImgFrente: string,
+    dniImgDorso: string,
     closeModal: MouseEventHandler;
 }
 

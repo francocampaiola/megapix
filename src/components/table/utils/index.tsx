@@ -1,7 +1,7 @@
 import Image from "next/image"
-import { ModalProps, RejectedClientModalProps, ToastProps } from "../interfaces"
+import { DocumentModalProps, RejectedClientModalProps, ToastProps } from "../interfaces"
 
-const DocumentModal = ({ closeModal }: ModalProps) => {
+const DocumentModal = ({ closeModal, dniImgFrente, dniImgDorso }: DocumentModalProps) => {
     return (
         <div className="bg-slate-900 bg-opacity-50 backdrop-blur-sm flex justify-center items-center absolute top-16 right-0 bottom-0 left-0 w-full">
             <div className="bg-neutral-900 rounded-md text-center" style={{
@@ -13,9 +13,9 @@ const DocumentModal = ({ closeModal }: ModalProps) => {
                 </div>
                 <hr className="border-gray-600 mb-3" />
                 <p className="text-white pl-3 text-xs text-left">Fotografía DNI frontal</p>
-                <Image src={'/ui/registro/DNI_frontal.png'} width={100} height={100} style={{ width: '50%' }} className="mx-auto mt-3" alt="DNI frontal" />
+                <Image src={dniImgFrente} width={100} height={100} style={{ width: '50%' }} className="mx-auto mt-3" alt="DNI frontal" />
                 <p className="text-white pl-3 text-xs text-left mt-3 mb-3">Fotografía DNI dorsal</p>
-                <Image src={'/ui/registro/DNI_dorsal.png'} width={100} height={100} style={{ width: '50%' }} className="mx-auto mt-3 mb-3" alt="DNI dorsal" />
+                <Image src={dniImgDorso} width={100} height={100} style={{ width: '50%' }} className="mx-auto mt-3 mb-3" alt="DNI dorsal" />
             </div>
         </div>
     )

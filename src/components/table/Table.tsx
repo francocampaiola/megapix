@@ -25,9 +25,17 @@ interface UserData {
 
 export const Table = () => {
 
+    // ESTADOS
     const [data, setData] = useState<UserData[]>([]);
     const [count, setCount] = useState(0);
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [showDocumentModal, setShowDocumentModal] = useState(false);
+    const [showClientRejectedModal, setShowClientRejectedModal] = useState(false);
+    const [showDropdownIndex, setShowDropdownIndex] = useState<number | null>(null);
+    const [showToast, setShowToast] = useState({ show: false, type: '' });
+    const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
 
+    // Actualización de los usuarios registrados a mostrar
     useEffect(() => {
         const client = createClient();
         const fetchData = async () => {
@@ -40,6 +48,7 @@ export const Table = () => {
         fetchData();
     }, []);
 
+    // Actualización de cantidad de items en la tabla
     useEffect(() => {
         const client = createClient();
         const fetchData = async () => {
@@ -52,15 +61,15 @@ export const Table = () => {
         fetchData();
     }, []);
 
-    const [showDocumentModal, setShowDocumentModal] = useState(false);
-    const [showClientRejectedModal, setShowClientRejectedModal] = useState(false);
-    const [showDropdown, setShowDropdown] = useState(false);
-    const [showToast, setShowToast] = useState({ show: false, type: '' });
+    // Cierre automático del dropdown cuando un modal se abre
+    useEffect(() => {
+        if (showDocumentModal || showClientRejectedModal) {
+            setShowDropdownIndex(null);
+            setShowModal(false);
+        }
+    }, [showDocumentModal, showClientRejectedModal]);
 
-    const closeDocumentModal = () => {
-        setShowDocumentModal(false);
-    };
-
+    // HANDLERS
     const closeClientRejectedModal = () => {
         setShowClientRejectedModal(false);
     }
@@ -69,22 +78,26 @@ export const Table = () => {
         setShowToast({ show: false, type: '' })
     }
 
-    const toggleViewDocument = () => {
+    // TOGGLES
+    const toggleViewDocument = (userData: UserData) => {
+        setSelectedUser(userData);
         setShowDocumentModal(true);
-        setShowDropdown(false);
+        setShowDropdownIndex(null);
+        setShowModal(true);
     }
 
     const toggleClientRejected = () => {
         setShowClientRejectedModal(true);
-        setShowDropdown(false);
+        setShowDropdownIndex(null);
+        setShowModal(true);
     }
 
-    const toggleDropdown = () => {
-        setShowDropdown(!showDropdown);
+    const toggleDropdownIndex = (index: number) => {
+        setShowDropdownIndex(showDropdownIndex === index ? null : index);
     };
 
     const toggleShowToast = (type: string) => {
-        setShowDropdown(false);
+        setShowDropdownIndex(null);
         setShowToast({ show: true, type: type });
     }
 
@@ -146,7 +159,7 @@ export const Table = () => {
                                         </td>
                                         <td className="text-sm font-light px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
-                                                <HiOutlineIdentification onClick={() => setShowDocumentModal(true)} size={20} className="cursor-pointer mr-2 text-teal-500" />
+                                                <HiOutlineIdentification onClick={() => toggleViewDocument(item)} size={20} className="cursor-pointer mr-2 text-teal-500" />
                                                 {item.dni_numero.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                                             </div>
                                         </td>
@@ -154,14 +167,14 @@ export const Table = () => {
                                             -
                                         </td>
                                         <td className="text-sm font-light px-6 py-4 whitespace-nowrap text-end">
-                                            <button onClick={toggleDropdown} className="text-gray-400 hover:text-white">
+                                            <button onClick={() => toggleDropdownIndex(index)} className="text-gray-400 hover:text-white">
                                                 <CiMenuKebab size={20} className="cursor-pointer" />
                                             </button>
                                         </td>
-                                        {showDropdown && (
+                                        {showDropdownIndex === index && (
                                             <td className="absolute right-40 mt-4 mr-3 w-56 rounded-md bg-neutral-600 shadow-lg z-10">
                                                 <div className="py-1">
-                                                    <a onClick={toggleViewDocument} className="block px-4 py-2 text-sm text-white cursor-pointer">Ver documento</a>
+                                                    <a onClick={() => toggleViewDocument(item)} className="block px-4 py-2 text-sm text-white cursor-pointer">Ver documento</a>
                                                     <hr className="mr-4 ml-4 border-grey-300" />
                                                     <a onClick={() => toggleShowToast('success')} className="block px-4 py-2 text-sm text-white ">Aprobar cliente</a>
                                                     <hr className="mr-4 ml-4 border-grey-300" />
@@ -196,10 +209,13 @@ export const Table = () => {
                 </div>
             </div>
             {
-                showDocumentModal ? (
-                    <DocumentModal closeModal={closeDocumentModal} />
-                ) : <></>
-            }
+                showDocumentModal && selectedUser && (
+                    <DocumentModal
+                        dniImgFrente={selectedUser.dni_img_frente || ''}
+                        dniImgDorso={selectedUser.dni_img_dorso || ''}
+                        closeModal={() => setShowDocumentModal(false)}
+                    />
+                )}
             {
                 showToast.show && (
                     <ClientToast type={showToast.type} closeToast={closeToast} />
