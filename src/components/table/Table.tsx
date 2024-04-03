@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CiMenuKebab } from "react-icons/ci";
 import { FaChevronRight } from "react-icons/fa";
 import { HiOutlineIdentification } from "react-icons/hi";
@@ -28,7 +28,6 @@ export const Table = () => {
     // ESTADOS
     const [data, setData] = useState<UserData[]>([]);
     const [count, setCount] = useState(0);
-    const [showModal, setShowModal] = useState<boolean>(false);
     const [showDocumentModal, setShowDocumentModal] = useState(false);
     const [showClientRejectedModal, setShowClientRejectedModal] = useState(false);
     const [showDropdownIndex, setShowDropdownIndex] = useState<number | null>(null);
@@ -65,7 +64,6 @@ export const Table = () => {
     useEffect(() => {
         if (showDocumentModal || showClientRejectedModal) {
             setShowDropdownIndex(null);
-            setShowModal(false);
         }
     }, [showDocumentModal, showClientRejectedModal]);
 
@@ -83,13 +81,11 @@ export const Table = () => {
         setSelectedUser(userData);
         setShowDocumentModal(true);
         setShowDropdownIndex(null);
-        setShowModal(true);
     }
 
     const toggleClientRejected = () => {
         setShowClientRejectedModal(true);
         setShowDropdownIndex(null);
-        setShowModal(true);
     }
 
     const toggleDropdownIndex = (index: number) => {
@@ -100,6 +96,51 @@ export const Table = () => {
         setShowDropdownIndex(null);
         setShowToast({ show: true, type: type });
     }
+
+    // FUNCIONES
+    const aprobarUsuario = useCallback(async (id: number) => {
+        try {
+            const res = await fetch('/api/approveUser', {
+                method: 'POST',
+                body: JSON.stringify({ id }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!res.ok) {
+                throw new Error('Error al aprobar cliente');
+            }
+
+            const data = await res.json();
+            toggleShowToast('success');
+        }
+        catch (error) {
+            console.log(error);
+            toggleShowToast('error');
+        }
+    }, []);
+
+    const denegarUsuario = useCallback(async (id: number, reason: string) => {
+        try {
+            const res = await fetch('/api/rejectUser', {
+                method: 'POST',
+                body: JSON.stringify({ id, reason }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!res.ok) {
+                throw new Error('Error al denegar cliente');
+            }
+
+            const data = await res.json();
+            toggleShowToast('success');
+        }
+        catch (error) {
+            console.log(error);
+            toggleShowToast('error');
+        }
+    }, []);
 
     return (
         <div className="flex flex-col">
@@ -164,7 +205,7 @@ export const Table = () => {
                                             </div>
                                         </td>
                                         <td className="text-sm font-light px-6 py-4 whitespace-nowrap">
-                                            -
+                                            {item.motivo_rechazo || '-'}
                                         </td>
                                         <td className="text-sm font-light px-6 py-4 whitespace-nowrap text-end">
                                             <button onClick={() => toggleDropdownIndex(index)} className="text-gray-400 hover:text-white">
@@ -176,7 +217,7 @@ export const Table = () => {
                                                 <div className="py-1">
                                                     <a onClick={() => toggleViewDocument(item)} className="block px-4 py-2 text-sm text-white cursor-pointer">Ver documento</a>
                                                     <hr className="mr-4 ml-4 border-grey-300" />
-                                                    <a onClick={() => toggleShowToast('success')} className="block px-4 py-2 text-sm text-white ">Aprobar cliente</a>
+                                                    <a onClick={() => aprobarUsuario(item.id)} className="block px-4 py-2 text-sm text-white ">Aprobar cliente</a>
                                                     <hr className="mr-4 ml-4 border-grey-300" />
                                                     <a onClick={toggleClientRejected} className="block px-4 py-2 text-sm text-white ">Denegar cliente</a>
                                                 </div>
