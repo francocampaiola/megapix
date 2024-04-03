@@ -1,11 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useState } from "react";
+import { RejectedUserModalProps } from "./interfaces";
+import { UserToast, DocumentModal } from "./utils";
+
+import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
 import { CiMenuKebab } from "react-icons/ci";
 import { FaChevronRight } from "react-icons/fa";
 import { HiOutlineIdentification } from "react-icons/hi";
 import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-icons/md";
-import { ClientToast, DocumentModal, RejectedClientModal } from "./utils";
 
 import { createClient } from '@/utils/supabase/client';
 
@@ -29,7 +31,7 @@ export const Table = () => {
     const [data, setData] = useState<UserData[]>([]);
     const [count, setCount] = useState(0);
     const [showDocumentModal, setShowDocumentModal] = useState(false);
-    const [showClientRejectedModal, setShowClientRejectedModal] = useState(false);
+    const [showUserRejectedModal, setShowUserRejectedModal] = useState(false);
     const [showDropdownIndex, setShowDropdownIndex] = useState<number | null>(null);
     const [showToast, setShowToast] = useState({ show: false, type: '' });
     const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
@@ -62,14 +64,14 @@ export const Table = () => {
 
     // Cierre automático del dropdown cuando un modal se abre
     useEffect(() => {
-        if (showDocumentModal || showClientRejectedModal) {
+        if (showDocumentModal || showUserRejectedModal) {
             setShowDropdownIndex(null);
         }
-    }, [showDocumentModal, showClientRejectedModal]);
+    }, [showDocumentModal, showUserRejectedModal]);
 
     // HANDLERS
-    const closeClientRejectedModal = () => {
-        setShowClientRejectedModal(false);
+    const closeUserRejectedModal = () => {
+        setShowUserRejectedModal(false);
     }
 
     const closeToast = () => {
@@ -83,8 +85,10 @@ export const Table = () => {
         setShowDropdownIndex(null);
     }
 
-    const toggleClientRejected = () => {
-        setShowClientRejectedModal(true);
+    const toggleUserRejected = (id: number) => {
+        const userToReject = data.find(user => user.id === id);
+        setSelectedUser(userToReject || null);
+        setShowUserRejectedModal(true);
         setShowDropdownIndex(null);
     }
 
@@ -120,11 +124,11 @@ export const Table = () => {
         }
     }, []);
 
-    const denegarUsuario = useCallback(async (id: number, reason: string) => {
+    const denegarUsuario = useCallback(async (id: number, motivo_rechazo: string) => {
         try {
-            const res = await fetch('/api/rejectUser', {
+            const res = await fetch('/api/denyUser', {
                 method: 'POST',
-                body: JSON.stringify({ id, reason }),
+                body: JSON.stringify({ id, motivo_rechazo }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -141,6 +145,56 @@ export const Table = () => {
             toggleShowToast('error');
         }
     }, []);
+
+    const RejectedUserModal = ({ closeModal, rejectUser }: RejectedUserModalProps) => {
+        const [motivoRechazo, setMotivoRechazo] = useState('');
+
+        const handleMotivoChange = (e: ChangeEvent<HTMLInputElement>) => {
+            setMotivoRechazo(e.target.value);
+        };
+
+        const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            try {
+                await rejectUser(selectedUser!.id, motivoRechazo);
+                setShowUserRejectedModal(false);
+            } catch (error) {
+                console.error('Error al denegar cliente:', error);
+            }
+        };
+
+        return (
+            <div className="bg-slate-900 bg-opacity-50 backdrop-blur-sm flex justify-center items-center absolute top-16 right-0 bottom-0 left-0 w-full">
+                <div className="bg-neutral-900 rounded-md text-center" style={{
+                    width: '800px',
+                    height: '300px'
+                }}>
+                    <div className="flex justify-between w-full items-center">
+                        <h3 className="text-white p-3 text-md">Denegar cliente</h3>
+                        <p className="text-white p-3 cursor-pointer" onClick={closeModal}>x</p>
+                    </div>
+                    <hr className="border-gray-600" />
+                    <form onSubmit={handleSubmit}>
+                        <div className="mt-6 space-y-8 pl-6 pr-3">
+                            <p className="text-white text-left">Al denegar al cliente no podrá usar servicios, en la tabla se visualizará con el estado rechazado.</p>
+                            <div>
+                                <p className="text-white text-left mb-2">Motivo</p>
+                                <input
+                                    className="w-full bg-transparent text-gray-600 dark:text-white dark:border-gray-700 rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-600 invalid:border-red-500 dark:placeholder-gray-300"
+                                    placeholder="Indicar motivo"
+                                    value={motivoRechazo}
+                                    onChange={handleMotivoChange}
+                                />
+                            </div>
+                            <button type="submit" className="h-9 px-3 w-44 justify-center flex text-black bg-cyan-300 hover:bg-cyan-200 active:bg-cyan-200 focus:bg-cyan-200 transition duration-500 rounded-md items-center">
+                                Enviar solicitud
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className="flex flex-col">
@@ -219,7 +273,7 @@ export const Table = () => {
                                                     <hr className="mr-4 ml-4 border-grey-300" />
                                                     <a onClick={() => aprobarUsuario(item.id)} className="block px-4 py-2 text-sm text-white ">Aprobar cliente</a>
                                                     <hr className="mr-4 ml-4 border-grey-300" />
-                                                    <a onClick={toggleClientRejected} className="block px-4 py-2 text-sm text-white ">Denegar cliente</a>
+                                                    <a onClick={() => toggleUserRejected(item.id)} className="block px-4 py-2 text-sm text-white ">Denegar cliente</a>
                                                 </div>
                                             </td>
                                         )}
@@ -259,12 +313,15 @@ export const Table = () => {
                 )}
             {
                 showToast.show && (
-                    <ClientToast type={showToast.type} closeToast={closeToast} />
+                    <UserToast type={showToast.type} closeToast={closeToast} />
                 )
             }
             {
-                showClientRejectedModal ? (
-                    <RejectedClientModal closeModal={closeClientRejectedModal} />
+                showUserRejectedModal ? (
+                    <RejectedUserModal
+                        closeModal={closeUserRejectedModal}
+                        rejectUser={denegarUsuario}
+                    />
                 ) : <></>
             }
         </div>

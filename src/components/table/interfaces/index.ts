@@ -11,6 +11,8 @@ export interface DocumentModalProps {
     closeModal: MouseEventHandler;
 }
 
-export interface RejectedClientModalProps {
+export interface RejectedUserModalProps {
     closeModal: MouseEventHandler;
+    rejectUser: (id: number, motivo_rechazo: string) => Promise<void>;
 }
+

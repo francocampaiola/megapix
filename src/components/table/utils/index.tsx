@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { DocumentModalProps, RejectedClientModalProps, ToastProps } from "../interfaces"
+import { DocumentModalProps, ToastProps } from "../interfaces"
 
 const DocumentModal = ({ closeModal, dniImgFrente, dniImgDorso }: DocumentModalProps) => {
     return (
@@ -21,36 +21,7 @@ const DocumentModal = ({ closeModal, dniImgFrente, dniImgDorso }: DocumentModalP
     )
 }
 
-const RejectedClientModal = ({ closeModal }: RejectedClientModalProps) => {
-    return (
-        <div className="bg-slate-900 bg-opacity-50 backdrop-blur-sm flex justify-center items-center absolute top-16 right-0 bottom-0 left-0 w-full">
-            <div className="bg-neutral-900 rounded-md text-center" style={{
-                width: '800px',
-                height: '300px'
-            }}>
-                <div className="flex justify-between w-full items-center">
-                    <h3 className="text-white p-3 text-md">Denegar cliente</h3>
-                    <p className="text-white p-3 cursor-pointer" onClick={closeModal}>x</p>
-                </div>
-                <hr className="border-gray-600" />
-                <form action="">
-                    <div className="mt-6 space-y-8 pl-6 pr-3">
-                        <p className="text-white text-left">Al denegar al cliente no podrá usar servicios, en la tabla se visualizará con el estado rechazado.</p>
-                        <div>
-                            <p className="text-white text-left mb-2">Motivo</p>
-                            <input className="w-full bg-transparent text-gray-600 dark:text-white dark:border-gray-700 rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-600 invalid:border-red-500 dark:placeholder-gray-300" placeholder="Indicar motivo" />
-                        </div>
-                        <button className="h-9 px-3 w-44 justify-center flex text-black bg-cyan-300 hover:bg-cyan-200 active:bg-cyan-200 focus:bg-cyan-200 transition duration-500 rounded-md items-center">
-                            Enviar solicitud
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    )
-}
-
-const ClientToast = ({ type, closeToast }: ToastProps) => {
+const UserToast = ({ type, closeToast }: ToastProps) => {
     return (
         type === 'success' ? (
             <div id="toast-success" className="flex items-center w-full max-w-xs ml-8 p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
@@ -61,8 +32,8 @@ const ClientToast = ({ type, closeToast }: ToastProps) => {
                     <span className="sr-only">Check icon</span>
                 </div>
                 <div>
-                    <div className="ms-3 text-sm font-normal">Cliente aprobado</div>
-                    <div className="ms-3 text-xs font-normal">Se aprobó el cliente con éxito</div>
+                    <div className="ms-3 text-sm font-normal">Cliente denegado</div>
+                    <div className="ms-3 text-xs font-normal">Se denegó al cliente con éxito</div>
                 </div>
                 <button type="button" className="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-success" aria-label="Close" onClick={closeToast}>
                     <span className="sr-only">Close</span>
@@ -91,4 +62,4 @@ const ClientToast = ({ type, closeToast }: ToastProps) => {
     );
 }
 
-export { DocumentModal, RejectedClientModal, ClientToast }; 
+export { DocumentModal, UserToast }; 
