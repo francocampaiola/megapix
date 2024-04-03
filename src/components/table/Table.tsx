@@ -43,6 +43,7 @@ export const Table = () => {
             const { data, error } = await client
                 .from('usuarios')
                 .select('*')
+                .order('id', { ascending: true })
             if (error) console.log('error', error);
             setData(data || []);
         }
